@@ -1,15 +1,21 @@
 # CryEx
 
+(This repository is private for now)
+
 A Python pipeline to identify Cryptix exons from RNA-Seq data.
 It uses Stringtie to assemble transcripts and identify cryptic exons. 
 It then calculates the PSI of each cryptic exons
 
+Instead of processing one bam file at the time, it takes as input a metadata
+file (FOFN) and can processes multiple bam files at once. 
+
 
 ## Installation
+Download this repository then:
 
-( we should replace this with the real package url)
-python3 -m pip install --index-url https://test.pypi.org/simple/ --no-deps example-package-YOUR-USERNAME-HERE
-
+```
+pip install dis/CryEx-0.0.1-py3-none-any.whl
+```
 
 ### Dependencies
 - stringtie
@@ -27,6 +33,12 @@ Cryex_stringtie -f ${FOFN.tsv} -o ${EXONS.GTF}
 
 # calculate splice junction usage
 Cryex_junctions -f ${FOFN.tsv} -o ${JXN.BED}
+
+# sort and gz compress bed file 
+less ${JXN.BED} | sort -k1,1V -k2,2n -k3,3n | bgzip -c > ${JXN.BED.GZ}
+
+# Created tabix index
+tabux -p bed -f ${JXN.BED.GZ}
 
 # calculate PSI
 Cryex_psi_calculator -f ${FOFN.tsv} -e ${EXONS.GTF} -j ${JXN.BED.GZ} -o {PSI.TSV} 
