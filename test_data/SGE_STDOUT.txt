@@ -1,0 +1,21 @@
+2024-09-12 16:19:56,010 INFO:	bam file strandedness = fr-firststrand
+2024-09-12 16:20:08,415 INFO:	/bin/sh: line 1: 21653 Segmentation fault      (core dumped) stringtie bam/HTE1_chr21.bam bam/HTE2_chr21.bam bam/HTE3_chr21.bam bam/HTE4_chr21.bam -j 2 -f 0.05 -g 10 > exons.gtf
+2024-09-12 16:20:10,029 INFO:	bam file strandedness = fr-firststrand
+2024-09-12 16:20:31,987 INFO:	job finished
+Traceback (most recent call last):
+  File "/u/home/g/giovas/.local/bin/CryEx_psi_calculator", line 8, in <module>
+    sys.exit(main())
+  File "/u/home/g/giovas/.local/lib/python3.10/site-packages/CryEx/psi.py", line 166, in main
+    df = pd.read_csv(options.exons_file, sep='\t', header=None, comment='#')
+  File "/u/home/g/giovas/.local/lib/python3.10/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+  File "/u/home/g/giovas/.local/lib/python3.10/site-packages/pandas/io/parsers/readers.py", line 620, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+  File "/u/home/g/giovas/.local/lib/python3.10/site-packages/pandas/io/parsers/readers.py", line 1620, in __init__
+    self._engine = self._make_engine(f, self.engine)
+  File "/u/home/g/giovas/.local/lib/python3.10/site-packages/pandas/io/parsers/readers.py", line 1898, in _make_engine
+    return mapping[engine](f, **self.options)
+  File "/u/home/g/giovas/.local/lib/python3.10/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 93, in __init__
+    self._reader = parsers.TextReader(src, **kwds)
+  File "parsers.pyx", line 581, in pandas._libs.parsers.TextReader.__cinit__
+pandas.errors.EmptyDataError: No columns to parse from file

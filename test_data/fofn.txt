@@ -1,0 +1,5 @@
+SAMPLE	BAM	STAR_SJ_OUT
+hte1	bam/HTE1_chr21.bam	star_sj_out/HTE1_SJ.out.tab
+hte2	bam/HTE2_chr21.bam	star_sj_out/HTE2_SJ.out.tab
+hte3	bam/HTE3_chr21.bam	star_sj_out/HTE3_SJ.out.tab
+hte4	bam/HTE4_chr21.bam	star_sj_out/HTE4_SJ.out.tab

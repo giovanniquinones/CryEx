@@ -1,0 +1,4 @@
+[console_scripts]
+CryEx_junctions = CryEx.get_splice_jnx:main
+CryEx_psi_calculator = CryEx.psi:main
+CryEx_stringtie = CryEx.stringtie:main

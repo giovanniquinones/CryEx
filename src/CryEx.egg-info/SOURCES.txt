@@ -1,0 +1,14 @@
+LICENSE
+README.md
+pyproject.toml
+setup.cfg
+src/CryEx/__init__.py
+src/CryEx/get_splice_jnx.py
+src/CryEx/psi.py
+src/CryEx/stringtie.py
+src/CryEx.egg-info/PKG-INFO
+src/CryEx.egg-info/SOURCES.txt
+src/CryEx.egg-info/dependency_links.txt
+src/CryEx.egg-info/entry_points.txt
+src/CryEx.egg-info/requires.txt
+src/CryEx.egg-info/top_level.txt
