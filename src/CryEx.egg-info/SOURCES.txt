@@ -3,6 +3,7 @@ README.md
 pyproject.toml
 setup.cfg
 src/CryEx/__init__.py
+src/CryEx/diff_psi.py
 src/CryEx/get_splice_jnx.py
 src/CryEx/psi.py
 src/CryEx/stringtie.py

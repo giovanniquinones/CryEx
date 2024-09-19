@@ -6,6 +6,7 @@ from collections import defaultdict, Counter
 import optparse
 import multiprocessing as mp
 import logging
+import os
 
 
 def read_filtering(pysam_read):
@@ -51,35 +52,49 @@ def determine_strand(read, strandedness):
 
 
 def extract_jxns_from_bam(bam_file, star_file, sample_name, strandedness, overhang_minimum = 8):
-    # extract splice junctions_bam from bam file
-    bh = pysam.AlignmentFile(bam_file, "rb")
-    junctions_bam = Counter()
+    
+    if not os.path.exists(star_file):
+        logging.info(f"[Warning] STAR juncion file {star_file} does not exist. Counting junctions from bam file {bam_file}")
 
-    for r in bh:
+        # extract splice junctions_bam from bam file
+        bh = pysam.AlignmentFile(bam_file, "rb")
+        junctions_bam = defaultdict(lambda : 0)
 
-        if not read_filtering(r):
-            continue
+        for r in bh:
 
-        r_strand = determine_strand(r, strandedness)
+            if not read_filtering(r):
+                continue
 
-        map_blocks = r.get_blocks()
-        chrom = r.reference_name
-        
-        for j in range(0, len(map_blocks) - 1):
-            jun5ss = map_blocks[j][1] # 0 -base
-            jun3ss = map_blocks[j + 1][0] # 1 - base
+            r_strand = determine_strand(r, strandedness)
 
-            if jun3ss - jun5ss > 20:
-                junctions_bam[(chrom, jun5ss, jun3ss, r_strand)] += 1
+            map_blocks = r.get_blocks()
+            chrom = r.reference_name
+            
+            for j in range(0, len(map_blocks) - 1):
+                jun5ss = map_blocks[j][1] # 0 -base
+                jun3ss = map_blocks[j + 1][0] # 1 - base
 
-    df = pd.read_csv(star_file, header = None, sep = '\t')
-    df.columns = ['chrom', 'jxn_s', 'jxn_e', 'strand', 'motif', 'annotated', 'n_uniq', 'n_multi', 'max_ov']
-    df = df[df.max_ov >= overhang_minimum]
+                if jun3ss - jun5ss > 20:
+                    junctions_bam[(chrom, jun5ss, jun3ss, r_strand)] += 1
 
-    for row in df.itertuples():
-        jxn = (row.chrom, row.jxn_s - 1, row.jxn_e, row.strand)
-        if jxn not in junctions_bam:
-            junctions_bam[jxn] += 1
+    else:
+        df = pd.read_csv(star_file, header = None, sep = '\t')
+        df.columns = ['chrom', 'jxn_s', 'jxn_e', 'strand', 'motif', 'annotated', 'n_uniq', 'n_multi', 'max_ov']
+        df = df[df.max_ov >= overhang_minimum]
+
+        for row in df.itertuples():
+            if row.strand == 1:
+                strand = '+'
+            elif row.strand == 2:
+                strand = '-'
+            elif row.strand == 0:
+                strand = '.'
+            else:
+                raise ValueError(f"Strand not valid {row.strand}")
+
+            jxn = (row.chrom, row.jxn_s - 1, row.jxn_e, row.strand)
+            if jxn not in junctions_bam:
+                junctions_bam[jxn] += 1
 
     return (sample_name, junctions_bam)
 

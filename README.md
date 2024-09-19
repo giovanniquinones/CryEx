@@ -42,16 +42,21 @@ tabux -p bed -f ${JXN.BED.GZ}
 
 # calculate PSI
 Cryex_psi_calculator -f ${FOFN.tsv} -e ${EXONS.GTF} -j ${JXN.BED.GZ} -o {PSI.TSV} 
+
+# calculate diffential splicing
+Cryex_diff -f ${FOFN.tsv} -p {PSI.TSV} -o {DIFF.tsv}
 ```
 
 ## Input
 
 FOFN should be tab separated and have the following columns:
+For differential splicing, Cryex will use the 'GROUP' column
 ```
-SAMPLE	BAM	STAR_SJ_OUT
-sample1    /path/to/sample1.bam	/path/to/sample1.SJ.out.tab
-sample2    /path/to/sample2.bam	/path/to/sample2.SJ.out.tab
-sample3    /path/to/sample3.bam	/path/to/sample3.SJ.out.tab
+SAMPLE	BAM	STAR_SJ_OUT	GROUP
+sample1    /path/to/sample1.bam	/path/to/sample1.SJ.out.tab	KD
+sample2    /path/to/sample2.bam	/path/to/sample2.SJ.out.tab	KD
+sample3    /path/to/sample3.bam	/path/to/sample3.SJ.out.tab	CTRL
+sample4	   /path/to/sample4.bam /path/to/sample4.SJ.out.tab     CTRL
 ```
 
 ## Output
@@ -65,3 +70,6 @@ first_exon      chr21   9907191     9907492     -       97              9896772 
 first_exon      chr21   9907191     9907492     -       67              9896772 9966321 0           r3      1.0
 first_exon      chr21   9907191     9907492     -       99              9896772 9966321 0           r4      1.0
 ```
+
+
+

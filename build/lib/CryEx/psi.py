@@ -166,6 +166,7 @@ def main():
 	df = pd.read_csv(options.exons_file, sep='\t', header=None, comment='#')
 	df.columns = ['chrom', 'source', 'type', 'start', 'end', 'score', 'strand', 'frame', 'attributes']
 	df = df[df['type'] == 'exon']
+	df = df[['chrom', 'start', 'end', 'strand']].drop_duplicates()
 
 	logging.info(f'Calculating psi of exons')
 
@@ -219,7 +220,7 @@ def main():
 			outline_2 = [inclusion_n, '.', '.', exclusion_n, sample_name, sample_name, psi]
 			outf.write('\t'.join(map(str, outline_1 + outline_2)) + '\n')
 		
-		if i_j % int(1e3) == 0:
+		if i_j % int(1e4) == 0:
 			logging.info(f'\tprocessed {i_j:,} introns')
 
 	outf.close()
