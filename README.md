@@ -14,7 +14,10 @@ file (FOFN) and can processes multiple bam files at once.
 Download this repository then:
 
 ```
-pip install dis/CryEx-0.0.1-py3-none-any.whl
+git clone https://github.com/giovanniquinones/CryEx
+cd CryEx
+pip install dist/CryEx-0.0.1-py3-none-any.whl
+export PATH=/intallation/path:$PATH 
 ```
 
 ### Dependencies
@@ -28,6 +31,9 @@ pip install dis/CryEx-0.0.1-py3-none-any.whl
 ## Usage
 
 ```
+# check if installed successfully
+Cryex_stringtie --help 
+
 # identify cryptic and annotated exons
 Cryex_stringtie -f ${FOFN.tsv} -o ${EXONS.GTF}
 
