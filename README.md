@@ -31,17 +31,14 @@ pip install dis/CryEx-0.0.1-py3-none-any.whl
 # identify cryptic and annotated exons
 Cryex_stringtie -f ${FOFN.tsv} -o ${EXONS.GTF}
 
+
 # calculate splice junction usage
 Cryex_junctions -f ${FOFN.tsv} -o ${JXN.BED}
 
-# sort and gz compress bed file 
-less ${JXN.BED} | sort -k1,1V -k2,2n -k3,3n | bgzip -c > ${JXN.BED.GZ}
-
-# Created tabix index
-tabux -p bed -f ${JXN.BED.GZ}
 
 # calculate PSI
 Cryex_psi_calculator -f ${FOFN.tsv} -e ${EXONS.GTF} -j ${JXN.BED.GZ} -o {PSI.TSV} 
+
 
 # calculate diffential splicing
 Cryex_diff -f ${FOFN.tsv} -p {PSI.TSV} -o {DIFF.tsv}

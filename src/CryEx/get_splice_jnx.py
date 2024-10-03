@@ -146,6 +146,17 @@ def main():
         outf.write(f'{chrom}\t{jxn_s}\t{jxn_e}\t{s}\t{n}\t{strand}\n')
 
     outf.close()
+
+    # process jxn file
+    COMMAND_SORT = f"less {options.output} | sort -k1,1V -k2,2n -k3,3n | bgzip -c > ${options.output}.gz"
+    mycmd = subprocess.getoutput(COMMAND_SORT)
+    logging.info(mycmd)
+
+    COMMAND_SORT = f"tabix -p gff -f ${options.output}.gz"
+    mycmd = subprocess.getoutput(COMMAND_SORT)
+    logging.info(mycmd)
+
+
     logging.info(f'job finished')
 
 
