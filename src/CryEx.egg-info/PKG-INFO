@@ -33,7 +33,10 @@ file (FOFN) and can processes multiple bam files at once.
 Download this repository then:
 
 ```
-pip install dis/CryEx-0.0.1-py3-none-any.whl
+git clone https://github.com/giovanniquinones/CryEx
+cd CryEx
+pip install dist/CryEx-0.0.1-py3-none-any.whl
+export PATH=/intallation/path:$PATH 
 ```
 
 ### Dependencies
@@ -47,30 +50,35 @@ pip install dis/CryEx-0.0.1-py3-none-any.whl
 ## Usage
 
 ```
+# check if installed successfully
+CryEx_stringtie --help 
+
 # identify cryptic and annotated exons
-Cryex_stringtie -f ${FOFN.tsv} -o ${EXONS.GTF}
+CryEx_stringtie -f ${FOFN.tsv} -o ${EXONS.GTF}
+
 
 # calculate splice junction usage
-Cryex_junctions -f ${FOFN.tsv} -o ${JXN.BED}
+CryEx_junctions -f ${FOFN.tsv} -o ${JXN.BED}
 
-# sort and gz compress bed file 
-less ${JXN.BED} | sort -k1,1V -k2,2n -k3,3n | bgzip -c > ${JXN.BED.GZ}
-
-# Created tabix index
-tabux -p bed -f ${JXN.BED.GZ}
 
 # calculate PSI
-Cryex_psi_calculator -f ${FOFN.tsv} -e ${EXONS.GTF} -j ${JXN.BED.GZ} -o {PSI.TSV} 
+CryEx_psi_calculator -f ${FOFN.tsv} -e ${EXONS.GTF} -j ${JXN.BED.GZ} -o {PSI.TSV} 
+
+
+# calculate diffential splicing
+CryEx_diff -f ${FOFN.tsv} -p {PSI.TSV} -o {DIFF.tsv}
 ```
 
 ## Input
 
 FOFN should be tab separated and have the following columns:
+For differential splicing, Cryex will use the 'GROUP' column
 ```
-SAMPLE	BAM	STAR_SJ_OUT
-sample1    /path/to/sample1.bam	/path/to/sample1.SJ.out.tab
-sample2    /path/to/sample2.bam	/path/to/sample2.SJ.out.tab
-sample3    /path/to/sample3.bam	/path/to/sample3.SJ.out.tab
+SAMPLE	BAM	STAR_SJ_OUT	GROUP
+sample1    /path/to/sample1.bam	/path/to/sample1.SJ.out.tab	KD
+sample2    /path/to/sample2.bam	/path/to/sample2.SJ.out.tab	KD
+sample3    /path/to/sample3.bam	/path/to/sample3.SJ.out.tab	CTRL
+sample4	   /path/to/sample4.bam /path/to/sample4.SJ.out.tab     CTRL
 ```
 
 ## Output
@@ -84,3 +92,6 @@ first_exon      chr21   9907191     9907492     -       97              9896772 
 first_exon      chr21   9907191     9907492     -       67              9896772 9966321 0           r3      1.0
 first_exon      chr21   9907191     9907492     -       99              9896772 9966321 0           r4      1.0
 ```
+
+
+

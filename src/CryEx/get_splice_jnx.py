@@ -4,6 +4,7 @@ import pysam
 import pandas as pd
 from collections import defaultdict, Counter
 import optparse
+import subprocess
 import multiprocessing as mp
 import logging
 import os
@@ -28,7 +29,7 @@ def determine_strand(read, strandedness):
 		strand1, strand2 = '-', '+'
 	elif strandedness == 'fr-secondstrand':
 		strand1, strand2 = '+', '-'
-	elif strandedness == 'fr-unstrand':
+	elif strandedness == 'unstranded':
 		strand1, strand2 = '.', '.'
 	else:
 		raise ValueError("\nStrandedness not valid")
@@ -93,7 +94,7 @@ def extract_jxns_from_bam(bam_file, star_file, sample_name, strandedness, overha
                 raise ValueError(f"Strand not valid {row.strand}")
 
             jxn = (row.chrom, row.jxn_s - 1, row.jxn_e, strand)
-            junctions_bam[jxn] += 1
+            junctions_bam[jxn] = row.n_uniq 
 
     return (sample_name, junctions_bam)
 
@@ -101,7 +102,7 @@ def extract_jxns_from_bam(bam_file, star_file, sample_name, strandedness, overha
 def main():
     args = sys.argv
 
-    logging.basicConfig(level = logging.INFO, format = '%(asctime)s %(levelname)s:\t%(message)s')
+    logging.basicConfig(level = logging.INFO, format = '%(filename)s %(asctime)s %(levelname)s:\t%(message)s')
 
     # option parser
     usage_instructions = f"""CryEx_junctions -f fofn -o output_file"""
@@ -146,6 +147,17 @@ def main():
         outf.write(f'{chrom}\t{jxn_s}\t{jxn_e}\t{s}\t{n}\t{strand}\n')
 
     outf.close()
+
+    # process jxn file
+    COMMAND_SORT = f"less {options.output} | sort -k1,1V -k2,2n -k3,3n | bgzip -c > {options.output}.gz"
+    mycmd = subprocess.getoutput(COMMAND_SORT)
+    logging.info(mycmd)
+
+    COMMAND_SORT = f"tabix -f {options.output}.gz"
+    mycmd = subprocess.getoutput(COMMAND_SORT)
+    logging.info(mycmd)
+
+
     logging.info(f'job finished')
 
 

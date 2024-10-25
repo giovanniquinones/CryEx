@@ -14,7 +14,10 @@ file (FOFN) and can processes multiple bam files at once.
 Download this repository then:
 
 ```
-pip install dis/CryEx-0.0.1-py3-none-any.whl
+git clone https://github.com/giovanniquinones/CryEx
+cd CryEx
+pip install dist/CryEx-0.0.1-py3-none-any.whl
+export PATH=/intallation/path:$PATH 
 ```
 
 ### Dependencies
@@ -28,23 +31,23 @@ pip install dis/CryEx-0.0.1-py3-none-any.whl
 ## Usage
 
 ```
+# check if installed successfully
+CryEx_stringtie --help 
+
 # identify cryptic and annotated exons
-Cryex_stringtie -f ${FOFN.tsv} -o ${EXONS.GTF}
+CryEx_stringtie -f ${FOFN.tsv} -o ${EXONS.GTF}
+
 
 # calculate splice junction usage
-Cryex_junctions -f ${FOFN.tsv} -o ${JXN.BED}
+CryEx_junctions -f ${FOFN.tsv} -o ${JXN.BED}
 
-# sort and gz compress bed file 
-less ${JXN.BED} | sort -k1,1V -k2,2n -k3,3n | bgzip -c > ${JXN.BED.GZ}
-
-# Created tabix index
-tabux -p bed -f ${JXN.BED.GZ}
 
 # calculate PSI
-Cryex_psi_calculator -f ${FOFN.tsv} -e ${EXONS.GTF} -j ${JXN.BED.GZ} -o {PSI.TSV} 
+CryEx_psi_calculator -f ${FOFN.tsv} -e ${EXONS.GTF} -j ${JXN.BED.GZ} -o {PSI.TSV} 
+
 
 # calculate diffential splicing
-Cryex_diff -f ${FOFN.tsv} -p {PSI.TSV} -o {DIFF.tsv}
+CryEx_diff -f ${FOFN.tsv} -p {PSI.TSV} -o {DIFF.tsv}
 ```
 
 ## Input

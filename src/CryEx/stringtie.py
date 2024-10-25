@@ -10,7 +10,7 @@ import optparse
 def main():
     args = sys.argv
 
-    logging.basicConfig(level = logging.INFO, format = '%(asctime)s %(levelname)s:\t%(message)s')
+    logging.basicConfig(level = logging.INFO, format = '%(filename)s %(asctime)s %(levelname)s:\t%(message)s')
 
     # option parser
     usage_instructions = f"""CryEx_stringtie -f fofn -o output_file"""
@@ -25,16 +25,23 @@ def main():
 
     options, args = parser.parse_args()
 
-    logging.info(f'bam file strandedness = {options.strandedness}')
+    logging.info(f'assumed strandedness for bam file = {options.strandedness}')
 
     METADATA = pd.read_csv(options.fofn, sep = '\t')
 
-    args = [(row.BAM, row.STAR_SJ_OUT, row.SAMPLE) for row in METADATA.itertuples()]
+    if options.strandedness == 'fr-firststrand':
+        strand_param = '--rf'
+    elif options.strandedness == 'fr-secondstrand':
+        strand_param = '--fr'
+    elif options.strandedness == 'unstranded':
+        strand_param = ''
 
-    bams = ' '.join(METADATA.BAM.values)
+ 
+    for row in METADATA.itertuples():
+        STRINGTIE_COMMAND = f"stringtie {row.BAM} -j 2 -f 0.05 -g 10 {strand_param} > {options.output}.{row.SAMPLE}.gtf"
+        mycmd = subprocess.getoutput(STRINGTIE_COMMAND)
 
-    STRINGTIE_COMMAND = f"stringtie {bams} -j 2 -f 0.05 -g 10 > {options.output}"
-
+    STRINGTIE_COMMAND = f"cat {options.output}.*.gtf | sort -k1,1V -k4,4n -k5,5n > {options.output}"
     mycmd = subprocess.getoutput(STRINGTIE_COMMAND)
 
     logging.info(mycmd)
