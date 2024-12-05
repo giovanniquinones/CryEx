@@ -80,7 +80,7 @@ def splicing_type(jun5ss_counter, jun3ss_counter, strand):
 
 
 
-def get_coverage(chrom, start, end, strand, bh, min_overlap = 5, PADDING = 10):
+def get_coverage(chrom, start, end, strand, bh, strandedness, min_overlap = 5, PADDING = 10):
 
 	RL_counter = Counter()
 	jun5ss_counter = Counter()
@@ -95,7 +95,7 @@ def get_coverage(chrom, start, end, strand, bh, min_overlap = 5, PADDING = 10):
 		if read.get_overlap(start, end) < min_overlap:
 			continue	
 
-		r_strand = determine_strand(read, options.strandedness)
+		r_strand = determine_strand(read, strandedness)
 		
 		if r_strand != strand:
 			continue
@@ -221,7 +221,7 @@ def main():
 
 		INFO = {}
 		for sample_name, bh in bh_list:
-			vals = get_coverage(exon.chrom, exon.start, exon.end, exon.strand, bh)
+			vals = get_coverage(exon.chrom, exon.start, exon.end, exon.strand, bh, options.strandedness)
 			INFO[sample_name] = vals
 
 		exon_len = (exon.end - exon.start + 1)
