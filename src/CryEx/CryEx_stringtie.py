@@ -39,7 +39,20 @@ def main():
  
     for row in METADATA.itertuples():
         STRINGTIE_COMMAND = f"stringtie {row.BAM} -j 2 -f 0.05 -g 10 {strand_param} > {options.output}.{row.SAMPLE}.gtf"
-        mycmd = subprocess.getoutput(STRINGTIE_COMMAND)
+        try:
+            result = subprocess.run(STRINGTIE_COMMAND,
+                shell = True,
+                stdout = subprocess.PIPE,
+                stderr = subprocess.PIPE,
+                text = True,
+                check = True)
+            logging.info(f"Command output: {result.stdout}")
+        except subprocess.CalledProcessError as e:
+            logging.error(f"Command failed with return code: {e.returncode}")
+            logging.error(f"Error message: {e.stderr}")
+            
+
+        
 
     STRINGTIE_COMMAND = f"cat {options.output}.*.gtf | sort -k1,1V -k4,4n -k5,5n > {options.output}"
     mycmd = subprocess.getoutput(STRINGTIE_COMMAND)

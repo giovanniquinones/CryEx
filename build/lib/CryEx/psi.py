@@ -57,14 +57,14 @@ def splicing_type(jun5ss_counter, jun3ss_counter, strand):
 		exon_type = 'not_spliced'
 	
 	elif len(jun5ss_counter) > 0 and len(jun3ss_counter) == 0 and strand == '-':
-		exon_type = 'first_exon'
+		exon_type = 'last_exon'
 	elif len(jun5ss_counter) == 0 and len(jun3ss_counter) > 0 and strand == '+':
-		exon_type = 'first_exon'
+		exon_type = 'last_exon'
 
 	elif len(jun5ss_counter) > 0 and len(jun3ss_counter) == 0 and strand == '+':
-		exon_type = 'last_exon'
+		exon_type = 'first_exon'
 	elif len(jun5ss_counter) == 0 and len(jun3ss_counter) > 0 and strand == '-':
-		exon_type = 'last_exon'
+		exon_type = 'first_exon'
 	
 	elif len(jun5ss_counter) > 0 and len(jun3ss_counter) == 0 and strand == '.':
 		exon_type = 'end_exon'
@@ -80,22 +80,22 @@ def splicing_type(jun5ss_counter, jun3ss_counter, strand):
 
 
 
-def get_coverage(chrom, start, end, strand, bh, min_overlap = 5, PADDING = 10):
+def get_coverage(chrom, EXON_START, EXON_END, strand, bh, strandedness, min_overlap = 5, PADDING = 10):
 
 	RL_counter = Counter()
 	jun5ss_counter = Counter()
 	jun3ss_counter = Counter()
 	inclusion_n = 0
 
-	for read in bh.fetch(chrom, start, end + 1):
+	for read in bh.fetch(chrom, EXON_START, EXON_END + 1):
 		
 		if not read_filtering(read):
 			continue
 
-		if read.get_overlap(start, end) < min_overlap:
+		if read.get_overlap(EXON_START, EXON_END) < min_overlap:
 			continue	
 
-		r_strand = determine_strand(read, options.strandedness)
+		r_strand = determine_strand(read, strandedness)
 		
 		if r_strand != strand:
 			continue
@@ -108,10 +108,10 @@ def get_coverage(chrom, start, end, strand, bh, min_overlap = 5, PADDING = 10):
 			jun5ss = map_blocks[j][1] # exon ends 
 			jun3ss = map_blocks[j + 1][0] # exon starts 
 
-			if jun5ss >= (end - PADDING) and jun5ss <= (end + PADDING):
+			if jun5ss >= (EXON_END - PADDING) and jun5ss <= (EXON_END + PADDING):
 				jun5ss_counter[jun5ss] += 1
 
-			if jun3ss >= (start - PADDING) and jun3ss <= (start + PADDING):
+			if jun3ss >= (EXON_START - PADDING) and jun3ss <= (EXON_START + PADDING):
 				jun3ss_counter[jun3ss] += 1
 
 		RL_counter[len(read.query_sequence)] += 1
@@ -221,10 +221,11 @@ def main():
 
 		INFO = {}
 		for sample_name, bh in bh_list:
-			vals = get_coverage(exon.chrom, exon.start, exon.end, exon.strand, bh)
+			vals = get_coverage(exon.chrom, exon.start, exon.end, exon.strand, bh, options.strandedness)
+			# inclusion_n, label, RL, max_junc_count
 			INFO[sample_name] = vals
 
-		exon_len = (exon.end - exon.start + 1)
+		EXON_LENGTH = (exon.end - exon.start + 1)
 
 		for line in tbx.fetch(exon.chrom, exon.start, exon.end):
 
@@ -235,7 +236,7 @@ def main():
 				for sample_name, exclusion_n in line.sm_count.items():
 					(inclusion_n, exon_type, RL, max_jxn_n) = INFO[sample_name]
 
-					psi = calculate_psi(inclusion_n, exclusion_n, exon_len, RL)
+					psi = calculate_psi(inclusion_n, exclusion_n, EXON_LENGTH, RL)
 
 					outline_1 = [exon_type, exon.chrom, exon.start, exon.end, exon.strand]
 					outline_2 = [inclusion_n, max_jxn_n, line.jxn_s, line.jxn_e, exclusion_n, sample_name, psi]
@@ -245,17 +246,23 @@ def main():
 			logging.info(f'\tprocessed {e_j:,} exons')
 
 	logging.info(f'Calculating psi of introns')
+	tbx.close()
 
+
+	tbx = pysam.TabixFile(options.jxn_file)
 	for i_j, row in enumerate(tbx.fetch()):
 		
 		line = myparser(row)
+
+		if i_j % int(1e3) == 0:
+			logging.info(f'\tprocessed {i_j:,} introns')
 
 		if line.len < 20: 
 			continue
 
 		INFO = {}
 		for sample_name, bh in bh_list:
-			vals = get_coverage(line.contig, line.jxn_s, line.jxn_e, line.strand, bh)
+			vals = get_coverage(line.contig, line.jxn_s, line.jxn_e, line.strand, bh, options.strandedness)
 			INFO[sample_name] = vals
 
 		for sample_name, exclusion_n in line.sm_count.items():
@@ -268,9 +275,6 @@ def main():
 			outline_1 = ['intron', line.contig, line.jxn_s, line.jxn_e, line.strand]
 			outline_2 = [inclusion_n, max_jxn_n, '.', '.', exclusion_n, sample_name, psi]
 			outf.write('\t'.join(map(str, outline_1 + outline_2)) + '\n')
-		
-		if i_j % int(1e4) == 0:
-			logging.info(f'\tprocessed {i_j:,} introns')
 
 	outf.close()
 

@@ -9,7 +9,10 @@ from scipy.stats import betabinom, chi2
 from statsmodels.stats.multitest import multipletests
 import optparse
 import logging
+import warnings
 
+np.seterr(all = 'ignore')
+warnings.filterwarnings('ignore')
 
 
 def beta_binomial_llr(grp1_lst, grp2_lst):
@@ -112,7 +115,7 @@ def main():
 
     GRP1, GRP2 = unique_group_values
 
-
+    logging.info(f'Processing {len(EXONS)} regions')
 
     outlines = []
 
@@ -122,13 +125,13 @@ def main():
         covs = np.array(covs_r) >= options.min_cov
         
         if np.any(covs == False):
-            logging.info(f"Skipping {exon} due to low coverage {covs_r}")
+            # logging.info(f"Skipping {exon} due to low coverage {covs_r}")
             continue
         
         llr, pval = beta_binomial_llr(group_dict[GRP1], group_dict[GRP2])
 
         if np.isnan(llr):
-            logging.info(f"Skipping {exon} cannot calculate llr")
+            # logging.info(f"Skipping {exon} cannot calculate llr")
             continue
         
         psi_grp1_lst = ','.join(map(str, [x[0] for x in group_dict[GRP1]]))
@@ -160,7 +163,7 @@ def main():
 
     outlines_df.to_csv(options.output_file, sep = '\t', index = False)
         
-    logging.info(f'Calculating psi of introns')
+    logging.info(f'Differemtially spliced exons written to {options.output_file}')
 
 	
 

@@ -1,4 +1,4 @@
-Metadata-Version: 2.1
+Metadata-Version: 2.4
 Name: CryEx
 Version: 0.0.1
 Summary: Cryptic Exon finder and splicing quantification
@@ -16,6 +16,7 @@ Requires-Dist: multiprocess
 Requires-Dist: numpy
 Requires-Dist: pandas
 Requires-Dist: pysam
+Dynamic: license-file
 
 # CryEx
 

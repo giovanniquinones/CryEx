@@ -10,10 +10,7 @@ from statsmodels.stats.multitest import multipletests
 import optparse
 import logging
 
-
-
-
-
+np.seterr(all = 'ignore')
 
 def beta_binomial_llr(grp1_lst, grp2_lst):
     # row.PSI, row.jxn_inc_n, row.exclusion_n, cov
@@ -125,13 +122,13 @@ def main():
         covs = np.array(covs_r) >= options.min_cov
         
         if np.any(covs == False):
-            logging.info(f"Skipping {exon} due to low coverage {covs_r}")
+            # logging.info(f"Skipping {exon} due to low coverage {covs_r}")
             continue
         
         llr, pval = beta_binomial_llr(group_dict[GRP1], group_dict[GRP2])
 
         if np.isnan(llr):
-            logging.info(f"Skipping {exon} cannot calculate llr")
+            # logging.info(f"Skipping {exon} cannot calculate llr")
             continue
         
         psi_grp1_lst = ','.join(map(str, [x[0] for x in group_dict[GRP1]]))
@@ -150,20 +147,19 @@ def main():
         else:
             SIG = False
 
-        outline = [exon, round(llr, 3), pval, SIG, round(delta_psi, 2), grp_diff, psi_grp1_lst, psi_grp2_lst, cov_grp1, cov_grp2]
+        outline = exon.split('\t') + [round(llr, 3), pval, SIG, round(delta_psi, 2), grp_diff, psi_grp1_lst, psi_grp2_lst, cov_grp1, cov_grp2]
         outlines.append(outline)
 
-    outlines_df = pd.DataFrame(outlines, columns = ['exon_type', 'exon_coords', 'flanking_jxns', 'LLR', 'Pvalue', 'Sig', 'DeltaPSI', 'DIFF', 'PSIGroup1', 'PSIGroup2', 'CovGroup1', 'CovGroup2'])
+    COLUMNS = ['exon_type', 'exon_coords', 'flanking_jxns', 'LLR', 'Pvalue', 'Sig', 'DeltaPSI', 'DIFF', 'PSIGroup1', 'PSIGroup2', 'CovGroup1', 'CovGroup2']
+    outlines_df = pd.DataFrame(outlines, columns = COLUMNS)
     rejected, adjusted_p_values, _, _ = multipletests(outlines_df.Pvalue , method='fdr_bh')
 
     outlines_df['Pvalue_Adj'] = adjusted_p_values
     outlines_df['Pvalue']     = outlines_df['Pvalue'].apply(lambda x: f'{x:.2e}')
     outlines_df['Pvalue_Adj'] = outlines_df['Pvalue_Adj'].apply(lambda x: f'{x:.2e}')
 
-
     outlines_df.to_csv(options.output_file, sep = '\t', index = False)
         
-    outf.close()
     logging.info(f'Calculating psi of introns')
 
 	
