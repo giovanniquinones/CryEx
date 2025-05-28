@@ -2,15 +2,15 @@
 
 (This repository is private for now)
 
-A Python pipeline to identify Cryptix exons from RNA-Seq data.
-It uses Stringtie to assemble transcripts and identify cryptic exons. 
-It then calculates the PSI of each cryptic exons
+CryEx: A Python Pipeline for Identifying Cryptic Exons from RNA-Seq Data
 
-Instead of processing one bam file at the time, it takes as input a metadata
-file (FOFN) and can processes multiple bam files at once. 
+CryEx is a Python-based pipeline designed to identify and quantify cryptic exons from RNA-Seq datasets. The pipeline leverages StringTie for transcript assembly and detects cryptic exons.
 
+After identifying cryptic exons, the pipeline computes Percent Spliced In (PSI) values for each exon to quantify their inclusion levels across samples.
 
-## Installation
+Unlike tools that process one BAM file at a time, CryptEx uses a metadata file (FOFN: File of File Names) to handle multiple BAM files in parallel, making it scalable for large RNA-Seq experiments.
+
+## Installation 🔧 
 Download this repository then:
 
 ```
@@ -26,7 +26,7 @@ pip install .
 export PATH=/path/to/bin:$PATH 
 ```
 
-### Dependencies
+### Dependencies 📦
 - stringtie
 - multiprocess
 - numpy
@@ -34,32 +34,28 @@ export PATH=/path/to/bin:$PATH
 - pysam
 - subprocess
 
-## Usage
+## Usage 🚀
 
 ```
-# check if installed successfully
+# Check if installed successfully
 CryEx_stringtie --help 
 
-# identify cryptic and annotated exons
+# Identify cryptic and annotated exons
 CryEx_stringtie -f ${FOFN.tsv} -o ${EXONS.GTF}
 
-
-# calculate splice junction usage
+# Calculate splice junction usage
 CryEx_junctions -f ${FOFN.tsv} -o ${JXN.BED}
 
-
-# calculate PSI
+# Calculate PSI
 CryEx_psi_calculator -f ${FOFN.tsv} -e ${EXONS.GTF} -j ${JXN.BED.GZ} -o {PSI.TSV} 
 
-
-# calculate diffential splicing
+# Calculate diffential splicing
 CryEx_diff -f ${FOFN.tsv} -p {PSI.TSV} -o {DIFF.tsv}
 ```
 
-## Input
+## Input 📥 
 
 FOFN should be tab separated and have the following columns:
-For differential splicing, Cryex will use the 'GROUP' column
 
 ```
 SAMPLE	    BAM	                    STAR_SJ_OUT	                    GROUP
@@ -69,7 +65,11 @@ sample3    /path/to/sample3.bam 	/path/to/sample3.SJ.out.tab     CTRL
 sample4	   /path/to/sample4.bam     /path/to/sample4.SJ.out.tab     KD
 ```
 
-## Output
+If STAR_SJ_OUT is not provided, fill in with `na`.
+For differential splicing, Cryex will use the 'GROUP' column.
+
+## Output 📤
+
 - CryEx_stringtie will output a standard GTF file with the identified cryptic and annotated exons.
 - CryEx_junctions will output a BED file with the splice junctions and their usage.
 
