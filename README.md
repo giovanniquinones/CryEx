@@ -1,14 +1,30 @@
 # CryEx
 
 (This repository is private for now)
+Paper Link: 
 
-CryEx: A Python Pipeline for Identifying Cryptic Exons from RNA-Seq Data
+CryEx: A Python Pipeline for Identifying Cryptic Exons from RNA-Seq Data 
 
 CryEx is a Python-based pipeline designed to identify and quantify cryptic exons from RNA-Seq datasets. The pipeline leverages StringTie for transcript assembly and detects cryptic exons.
 
 After identifying cryptic exons, the pipeline computes Percent Spliced In (PSI) values for each exon to quantify their inclusion levels across samples.
 
 Unlike tools that process one BAM file at a time, CryptEx uses a metadata file (FOFN: File of File Names) to handle multiple BAM files in parallel, making it scalable for large RNA-Seq experiments.
+
+# insert image here
+![CryEx Logo](CryEx_diagram.png)
+
+**Highlights:**
+
+●	A user-friendly python package for CryEx protocol to construct a comprehensive splicing landscape 
+
+●	Identification and quantification of cryptic exons and annotated exons using RNA-Seq data
+
+●	Customizable filtering parameters to enable differential splicing analysis at different resolutions
+
+●	A framework for implementing data preprocessing, analysis, customization and visualization
+
+
 
 ## Installation 🔧 
 Download this repository then:
@@ -105,3 +121,21 @@ middle_exon	chr21:47914042-47914146:+	47910632,47916900	2.408	2.82e-02	True	-0.7
 ```
 
 
+
+## Troubleshooting 🛠️
+
+- Problem 1:
+
+It fails to ‘pip install’ and return this error message “module ‘pip._vendor.platformdirs’ has no attribute ‘user_cache_dir’”.
+
+Potential solution: 
+
+•	Try ‘pip3 install’ instead of ‘pip install’
+
+- Problem 2:
+
+If fails to ‘CryEx_stringtie -f fofn.txt -o exons.gtf’ and return this error message “Segmentation fault”.
+
+Potential solution: 
+
+•	Run stringtie on each bam file one by one instead of multiple files in one run and concat the output GTF files.
