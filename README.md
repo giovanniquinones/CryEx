@@ -15,7 +15,9 @@ CryEx is a Python-based pipeline designed to identify and quantify cryptic exons
 
 ●	A framework for implementing data preprocessing, analysis, customization and visualization
 
-<img src="CryEx_diagram.png" alt="CryEx Logo" width="50%" height="50%"/>
+<p align="center">
+  <img src="CryEx_diagram.png" alt="CryEx Logo" width="66%" height="66%" />
+</p>
 
 ## Table of Contents 📚
 - [Installation 🔧](#installation-)
@@ -60,6 +62,8 @@ It is recommended to create a virtual environment before using `pip install` to 
 
 ## Usage 🚀
 
+After installation, you can use the CryEx command line tools. Below is an example of how to run the pipeline:
+
 ```
 # Check if installed successfully
 CryEx_stringtie --help 
@@ -77,15 +81,17 @@ CryEx_psi_calculator -f ${FOFN.tsv} -e ${EXONS.GTF} -j ${JXN.BED.GZ} -o {PSI.TSV
 CryEx_diff -f ${FOFN.tsv} -p {PSI.TSV} -o {DIFF.tsv}
 ```
 
+An example of this pipeline can be found in the `test_data` directory of this repository.
+
 ## Input 📥 
 
 FOFN should be tab separated and have the following columns:
 
 ```
 SAMPLE	    BAM	                    STAR_SJ_OUT	                    GROUP
-sample1    /path/to/sample1.bam 	/path/to/sample1.SJ.out.tab     CTRL
-sample2    /path/to/sample2.bam 	/path/to/sample2.SJ.out.tab     KD
-sample3    /path/to/sample3.bam 	/path/to/sample3.SJ.out.tab     CTRL
+sample1    /path/to/sample1.bam     /path/to/sample1.SJ.out.tab     CTRL
+sample2    /path/to/sample2.bam     /path/to/sample2.SJ.out.tab     KD
+sample3    /path/to/sample3.bam     /path/to/sample3.SJ.out.tab     CTRL
 sample4	   /path/to/sample4.bam     /path/to/sample4.SJ.out.tab     KD
 ```
 
@@ -127,8 +133,6 @@ first_exon	chr21:45515067-45516594:+	45514114,45518237	2.332	3.08e-02	True	-0.28
 middle_exon	chr21:45516486-45516594:+	45514114,45518237	2.332	3.08e-02	True	-0.48	    ctrl-kd	0.07,0.07	0.48,0.62	206,210	    74,50	    1.00e+00
 middle_exon	chr21:47914042-47914146:+	47910632,47916900	2.408	2.82e-02	True	-0.71	    ctrl-kd	0.02,0.09	0.71,0.82	160,121	    168,173	    1.00e+00
 ```
-
-
 
 ## Troubleshooting 🛠️
 
