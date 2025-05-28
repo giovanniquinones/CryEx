@@ -3,16 +3,7 @@
 (This repository is private for now)
 Paper Link: 
 
-CryEx: A Python Pipeline for Identifying Cryptic Exons from RNA-Seq Data 
-
 CryEx is a Python-based pipeline designed to identify and quantify cryptic exons from RNA-Seq datasets. The pipeline leverages StringTie for transcript assembly and detects cryptic exons.
-
-After identifying cryptic exons, the pipeline computes Percent Spliced In (PSI) values for each exon to quantify their inclusion levels across samples.
-
-Unlike tools that process one BAM file at a time, CryptEx uses a metadata file (FOFN: File of File Names) to handle multiple BAM files in parallel, making it scalable for large RNA-Seq experiments.
-
-# insert image here
-![CryEx Logo](CryEx_diagram.png)
 
 **Highlights:**
 
@@ -24,7 +15,14 @@ Unlike tools that process one BAM file at a time, CryptEx uses a metadata file (
 
 ●	A framework for implementing data preprocessing, analysis, customization and visualization
 
+![CryEx Logo](CryEx_diagram.png)
 
+## Table of Contents 📚
+- [Installation 🔧](#installation-)
+- [Usage 🚀](#usage-)
+- [Input 📥](#input-)
+- [Output 📤](#output-)
+- [Troubleshooting 🛠️](#troubleshooting-)
 
 ## Installation 🔧 
 Download this repository then:
@@ -123,6 +121,8 @@ middle_exon	chr21:47914042-47914146:+	47910632,47916900	2.408	2.82e-02	True	-0.7
 
 
 ## Troubleshooting 🛠️
+
+Please submit your issues to the GitHub repository directly (under the Issues tab).
 
 - Problem 1:
 
