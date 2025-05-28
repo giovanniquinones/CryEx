@@ -15,7 +15,7 @@ CryEx is a Python-based pipeline designed to identify and quantify cryptic exons
 
 ●	A framework for implementing data preprocessing, analysis, customization and visualization
 
-![CryEx Logo](CryEx_diagram.png)
+<img src="CryEx_diagram.png" alt="CryEx Logo" width="50%" height="50%"/>
 
 ## Table of Contents 📚
 - [Installation 🔧](#installation-)
@@ -25,7 +25,8 @@ CryEx is a Python-based pipeline designed to identify and quantify cryptic exons
 - [Troubleshooting 🛠️](#troubleshooting-)
 
 ## Installation 🔧 
-Download this repository then:
+
+Installation from the GitHub repository:
 
 ```
 git clone https://github.com/giovanniquinones/CryEx
@@ -40,7 +41,16 @@ pip install .
 export PATH=/path/to/bin:$PATH 
 ```
 
+Installation from PyPI:
+
+```
+pip install CryEx.v2
+```
+
+It is recommended to create a virtual environment before using `pip install` to obtain the dependencies.
+
 ### Dependencies 📦
+- Python 3.8+
 - stringtie
 - multiprocess
 - numpy
