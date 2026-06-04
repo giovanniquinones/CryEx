@@ -1,6 +1,5 @@
 # CryEx
 
-(This repository is private for now)
 Paper Link: 
 
 CryEx is a Python-based pipeline designed to identify and quantify cryptic exons from RNA-Seq datasets. The pipeline leverages StringTie for transcript assembly and detects cryptic exons.
