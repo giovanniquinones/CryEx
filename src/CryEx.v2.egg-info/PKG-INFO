@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: CryEx.v2
-Version: 2.0.1
+Version: 2.0.3
 Summary: Cryptic Exon finder and splicing quantification
 Home-page: https://github.com/giovanniquinones/CryEx
 Author: Rong Zhen, Giovanni Quinones Valdez
@@ -20,18 +20,34 @@ Dynamic: license-file
 
 # CryEx
 
-(This repository is private for now)
+Paper Link: 
 
-A Python pipeline to identify Cryptix exons from RNA-Seq data.
-It uses Stringtie to assemble transcripts and identify cryptic exons. 
-It then calculates the PSI of each cryptic exons
+CryEx is a Python-based pipeline designed to identify and quantify cryptic exons from RNA-Seq datasets. The pipeline leverages StringTie for transcript assembly and detects cryptic exons.
 
-Instead of processing one bam file at the time, it takes as input a metadata
-file (FOFN) and can processes multiple bam files at once. 
+**Highlights:**
 
+●	A user-friendly python package for CryEx protocol to construct a comprehensive splicing landscape 
 
-## Installation
-Download this repository then:
+●	Identification and quantification of cryptic exons and annotated exons using RNA-Seq data
+
+●	Customizable filtering parameters to enable differential splicing analysis at different resolutions
+
+●	A framework for implementing data preprocessing, analysis, customization and visualization
+
+<p align="center">
+  <img src="CryEx_diagram.png" alt="CryEx Logo" width="66%" height="66%" />
+</p>
+
+## Table of Contents 📚
+- [Installation 🔧](#installation-)
+- [Usage 🚀](#usage-)
+- [Input 📥](#input-)
+- [Output 📤](#output-)
+- [Troubleshooting 🛠️](#troubleshooting-)
+
+## Installation 🔧 
+
+Installation from the GitHub repository:
 
 ```
 git clone https://github.com/giovanniquinones/CryEx
@@ -46,7 +62,16 @@ pip install .
 export PATH=/path/to/bin:$PATH 
 ```
 
-### Dependencies
+Installation from PyPI:
+
+```
+pip install CryEx.v2
+```
+
+It is recommended to create a virtual environment before using `pip install` to obtain the dependencies.
+
+### Dependencies 📦
+- Python 3.8+
 - stringtie
 - multiprocess
 - numpy
@@ -54,42 +79,46 @@ export PATH=/path/to/bin:$PATH
 - pysam
 - subprocess
 
-## Usage
+## Usage 🚀
+
+After installation, you can use the CryEx command line tools. Below is an example of how to run the pipeline:
 
 ```
-# check if installed successfully
+# Check if installed successfully
 CryEx_stringtie --help 
 
-# identify cryptic and annotated exons
+# Identify cryptic and annotated exons
 CryEx_stringtie -f ${FOFN.tsv} -o ${EXONS.GTF}
 
-
-# calculate splice junction usage
+# Calculate splice junction usage
 CryEx_junctions -f ${FOFN.tsv} -o ${JXN.BED}
 
-
-# calculate PSI
+# Calculate PSI
 CryEx_psi_calculator -f ${FOFN.tsv} -e ${EXONS.GTF} -j ${JXN.BED.GZ} -o {PSI.TSV} 
 
-
-# calculate diffential splicing
+# Calculate diffential splicing
 CryEx_diff -f ${FOFN.tsv} -p {PSI.TSV} -o {DIFF.tsv}
 ```
 
-## Input
+An example of this pipeline can be found in the `test_data` directory of this repository.
+
+## Input 📥 
 
 FOFN should be tab separated and have the following columns:
-For differential splicing, Cryex will use the 'GROUP' column
 
 ```
 SAMPLE	    BAM	                    STAR_SJ_OUT	                    GROUP
-sample1    /path/to/sample1.bam 	/path/to/sample1.SJ.out.tab     CTRL
-sample2    /path/to/sample2.bam 	/path/to/sample2.SJ.out.tab     KD
-sample3    /path/to/sample3.bam 	/path/to/sample3.SJ.out.tab     CTRL
+sample1    /path/to/sample1.bam     /path/to/sample1.SJ.out.tab     CTRL
+sample2    /path/to/sample2.bam     /path/to/sample2.SJ.out.tab     KD
+sample3    /path/to/sample3.bam     /path/to/sample3.SJ.out.tab     CTRL
 sample4	   /path/to/sample4.bam     /path/to/sample4.SJ.out.tab     KD
 ```
 
-## Output
+If STAR_SJ_OUT is not provided, fill in with `na`.
+For differential splicing, Cryex will use the 'GROUP' column.
+
+## Output 📤
+
 - CryEx_stringtie will output a standard GTF file with the identified cryptic and annotated exons.
 - CryEx_junctions will output a BED file with the splice junctions and their usage.
 
@@ -124,4 +153,22 @@ middle_exon	chr21:45516486-45516594:+	45514114,45518237	2.332	3.08e-02	True	-0.4
 middle_exon	chr21:47914042-47914146:+	47910632,47916900	2.408	2.82e-02	True	-0.71	    ctrl-kd	0.02,0.09	0.71,0.82	160,121	    168,173	    1.00e+00
 ```
 
+## Troubleshooting 🛠️
 
+Please submit your issues to the GitHub repository directly (under the Issues tab).
+
+- Problem 1:
+
+It fails to ‘pip install’ and return this error message “module ‘pip._vendor.platformdirs’ has no attribute ‘user_cache_dir’”.
+
+Potential solution: 
+
+•	Try ‘pip3 install’ instead of ‘pip install’
+
+- Problem 2:
+
+If fails to ‘CryEx_stringtie -f fofn.txt -o exons.gtf’ and return this error message “Segmentation fault”.
+
+Potential solution: 
+
+•	Run stringtie on each bam file one by one instead of multiple files in one run and concat the output GTF files.
