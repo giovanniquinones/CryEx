@@ -31,7 +31,7 @@ Installation from the GitHub repository:
 
 ```
 git clone https://github.com/giovanniquinones/CryEx
-cd CryEx
+cd CryEx/Cryex_pkg
 
 # create a virtual environment from yaml file
 conda env create -f cryex_env.yaml
@@ -39,7 +39,6 @@ conda activate CryEx_env
 
 # install the package
 pip install .
-export PATH=/path/to/bin:$PATH 
 ```
 
 Installation from PyPI:
@@ -51,13 +50,12 @@ pip install CryEx.v2
 It is recommended to create a virtual environment before using `pip install` to obtain the dependencies.
 
 ### Dependencies 📦
-- Python 3.8+
-- stringtie
-- multiprocess
-- numpy
-- pandas
-- pysam
-- subprocess
+- Python 3.10+
+- Python packages: NumPy, pandas, pysam, SciPy, and Statsmodels (installed with CryEx)
+- External tools: StringTie, bgzip, and tabix (provided by HTSlib)
+
+`subprocess` and `multiprocessing` are part of Python’s standard library; they do
+not need to be installed separately.
 
 ## Usage 🚀
 
@@ -67,20 +65,32 @@ After installation, you can use the CryEx command line tools. Below is an exampl
 # Check if installed successfully
 CryEx_stringtie --help 
 
+# Set input/output paths (run from the Cryex_pkg directory)
+FOFN="test_data/fofn.txt"
+EXONS="out/exons.gtf"
+JXN="out/jxn.bed"
+PSI="out/psi.txt"
+DIFF="out/diff.txt"
+mkdir -p out
+
 # Identify cryptic and annotated exons
-CryEx_stringtie -f ${FOFN.tsv} -o ${EXONS.GTF}
+CryEx_stringtie -f "$FOFN" -o "$EXONS"
 
 # Calculate splice junction usage
-CryEx_junctions -f ${FOFN.tsv} -o ${JXN.BED}
+CryEx_junctions -f "$FOFN" -o "$JXN"
 
+# CryEx_junctions creates a sorted, bgzip-compressed "$JXN.gz" and tabix index.
 # Calculate PSI
-CryEx_psi_calculator -f ${FOFN.tsv} -e ${EXONS.GTF} -j ${JXN.BED.GZ} -o {PSI.TSV} 
+CryEx_psi_calculator -f "$FOFN" -e "$EXONS" -j "$JXN.gz" -o "$PSI"
 
-# Calculate diffential splicing
-CryEx_diff -f ${FOFN.tsv} -p {PSI.TSV} -o {DIFF.tsv}
+# Calculate differential splicing
+CryEx_diff -f "$FOFN" -p "$PSI" -o "$DIFF"
 ```
 
-An example of this pipeline can be found in the `test_data` directory of this repository.
+Set `FOFN`, `EXONS`, `JXN`, `PSI`, and `DIFF` to the paths you want to use before
+running these commands. An example pipeline is in `test_data/run_pipeline.sh`.
+Before running the example, update the BAM paths in `test_data/fofn.txt` to match
+your machine. Run the script from the `test_data` directory.
 
 ## Input 📥 
 
@@ -94,13 +104,16 @@ sample3    /path/to/sample3.bam     /path/to/sample3.SJ.out.tab     CTRL
 sample4	   /path/to/sample4.bam     /path/to/sample4.SJ.out.tab     KD
 ```
 
-If STAR_SJ_OUT is not provided, fill in with `na`.
+If STAR_SJ_OUT is not provided, fill in with `na`; CryEx then derives junctions
+from the BAM file. Keep the metadata header names exactly as shown.
 For differential splicing, Cryex will use the 'GROUP' column.
 
 ## Output 📤
 
 - CryEx_stringtie will output a standard GTF file with the identified cryptic and annotated exons.
-- CryEx_junctions will output a BED file with the splice junctions and their usage.
+- CryEx_junctions writes the plain-text junction table at the path given to `-o`,
+  plus a sorted bgzip-compressed `<output>.gz` and tabix index `<output>.gz.tbi`.
+  The PSI command reads the compressed table.
 
 ```
 chr21	9826943	    9826984	    hte1,hte2,hte3,hte4     10,1,7,11	+
@@ -110,28 +123,20 @@ chr21	9907462	    9909046	    hte1,hte2,hte3,hte4     1,0,0,0     -
 chr21	9908432	    9909046	    hte1,hte2,hte3,hte4     12,19,11,8	-
 ```
 
-- CryEx_psi_calculator will output a TSV file with the PSI values for each cryptic exon.
+- CryEx_psi_calculator will output a headered TSV file with 12 columns, including
+  exon/junction coordinates, inclusion and exclusion counts, sample, and PSI.
 
 ```
-exon_type       chrom   exon_3ss    exon_5ss    strand  inclusion_n     exc_5ss exc_3ss exclusion_n SAMPLE  PSI
-first_exon      chr21   9907191     9907492     -       97              9896772 9966321 1           r2      0.96
-first_exon      chr21   9907191     9907492     -       67              9896772 9966321 0           r3      1.0
-first_exon      chr21   9907191     9907492     -       99              9896772 9966321 0           r4      1.0
-first_exon      chr21   9907191     9907492     -       97              9896772 9966321 3           r2      0.92
-first_exon      chr21   9907191     9907492     -       67              9896772 9966321 0           r3      1.0
-first_exon      chr21   9907191     9907492     -       99              9896772 9966321 0           r4      1.0
+exon_type	chrom	exon_3ss	exon_5ss	strand	inclusion_n	jxn_inc_n	exc_5ss	exc_3ss	exclusion_n	SAMPLE	PSI
 ```
 - CryEx_diff will output a TSV file with the differential splicing results.
 
 ```
-exon_type	exon_coords	                flanking_jxns	    LLR     Pvalue	    Sig	    DeltaPSI    DIFF    PSIGroup1	PSIGroup2	CovGroup1	CovGroup2	Pvalue_Adj
-last_exon	chr21:45458057-45462429:+	45457808,45472160	2.49	2.57e-02	True	-0.54	    ctrl-kd	0.01,0.02	0.56,0.54	238,219	    285,323	    1.00e+00
-last_exon	chr21:45458057-45462454:+	45457808,45472160	2.49	2.57e-02	True	-0.54	    ctrl-kd	0.01,0.02	0.56,0.54	238,219	    285,323	    1.00e+00
-first_exon	chr21:45514756-45516594:+	45514114,45518237	2.332	3.08e-02	True	-0.26	    ctrl-kd	0.02,0.02	0.2,0.36	206,210	    74,50	    1.00e+00
-first_exon	chr21:45515067-45516594:+	45514114,45518237	2.332	3.08e-02	True	-0.28	    ctrl-kd	0.02,0.02	0.23,0.38	206,210	    74,50	    1.00e+00
-middle_exon	chr21:45516486-45516594:+	45514114,45518237	2.332	3.08e-02	True	-0.48	    ctrl-kd	0.07,0.07	0.48,0.62	206,210	    74,50	    1.00e+00
-middle_exon	chr21:47914042-47914146:+	47910632,47916900	2.408	2.82e-02	True	-0.71	    ctrl-kd	0.02,0.09	0.71,0.82	160,121	    168,173	    1.00e+00
+exon_type	exon_coords	flanking_jxns	LLR	Pvalue	Sig	DeltaPSI	DIFF	PSIGroup1	PSIGroup2	CovGroup1	CovGroup2	Pvalue_Adj
 ```
+
+`Sig` is true only when the LLR, absolute delta-PSI, and adjusted-p-value
+thresholds are all met.
 
 ## Troubleshooting 🛠️
 

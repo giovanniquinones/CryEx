@@ -3942,10 +3942,10 @@ chr21	StringTie	exon	34901156	34901243	1000	+	.	gene_id "STRG.73"; transcript_id
 chr21	StringTie	exon	34901156	34901243	1000	+	.	gene_id "STRG.73"; transcript_id "STRG.73.1"; exon_number "4"; cov "916.250000";
 chr21	StringTie	exon	34901156	34901243	1000	+	.	gene_id "STRG.77"; transcript_id "STRG.77.1"; exon_number "4"; cov "800.147705";
 chr21	StringTie	exon	34903065	34903190	1000	+	.	gene_id "STRG.67"; transcript_id "STRG.67.1"; exon_number "5"; cov "532.366577";
+chr21	StringTie	exon	34903065	34903190	1000	-	.	gene_id "STRG.68"; transcript_id "STRG.68.1"; exon_number "1"; cov "375.570007";
 chr21	StringTie	exon	34903065	34903190	1000	+	.	gene_id "STRG.73"; transcript_id "STRG.73.1"; exon_number "5"; cov "1180.293701";
 chr21	StringTie	exon	34903065	34903190	1000	+	.	gene_id "STRG.73"; transcript_id "STRG.73.1"; exon_number "5"; cov "932.341248";
 chr21	StringTie	exon	34903065	34903190	1000	+	.	gene_id "STRG.77"; transcript_id "STRG.77.1"; exon_number "5"; cov "1067.380981";
-chr21	StringTie	exon	34903065	34903190	1000	-	.	gene_id "STRG.68"; transcript_id "STRG.68.1"; exon_number "1"; cov "375.570007";
 chr21	StringTie	transcript	34903065	34914430	1000	-	.	gene_id "STRG.68"; transcript_id "STRG.68.1"; cov "706.972412"; FPKM "4334.797363"; TPM "7943.009766";
 chr21	StringTie	exon	34903795	34903863	1000	+	.	gene_id "STRG.67"; transcript_id "STRG.67.1"; exon_number "6"; cov "908.028992";
 chr21	StringTie	exon	34903795	34903863	1000	+	.	gene_id "STRG.73"; transcript_id "STRG.73.1"; exon_number "6"; cov "1076.260864";
