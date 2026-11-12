@@ -1,6 +1,6 @@
 # CryEx
 
-Paper Link: 
+Paper Link: [Star Protocols](https://www.cell.com/star-protocols/fulltext/S2666-1667(26)00584-8) 
 
 CryEx is a Python-based pipeline designed to identify and quantify cryptic exons from RNA-Seq datasets. The pipeline leverages StringTie for transcript assembly and detects cryptic exons.
 
